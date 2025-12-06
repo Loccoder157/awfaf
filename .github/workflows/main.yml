@@ -1,0 +1,31 @@
+name: Auto Claim LTC (Faucet Runner)
+
+on:
+  schedule:
+    # chạy mỗi 10 phút
+    - cron: '*/10 * * * *'
+  workflow_dispatch:   # cho phép chạy thủ công
+
+jobs:
+  claim:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install puppeteer@21.0.0
+
+      - name: Run auto-claim script
+        env:
+          LTC_ADDRESS: ${{ secrets.LTC_ADDRESS }}    # <-- hãy đặt secret trong repo settings
+          # nếu bạn không muốn dùng secret, thay bằng LTC_ADDRESS: "ltc1qx..." (KHÔNG KHUYẾN NGHỊ)
+        run: |
+          node claim.js
